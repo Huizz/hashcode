@@ -22,7 +22,7 @@ const calculateScore = library => {
     return accumulated + scoresOfBooks[current];
   }, 0);
 
-  const totalDaysToScan = numBooks / numBooksScannedPerDay;
+  const totalDaysToScan = books.length / numBooksScannedPerDay;
   const librayScore = totalScore / (totalDaysToScan + signupDays);
   library.librayScore = librayScore;
 
