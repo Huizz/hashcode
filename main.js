@@ -24,6 +24,7 @@ const calculateScore = (libID, libraryInfo, libraryBooks) => {
   const [numBooks, signupDays, numBooksScannedPerDay] = libraryInfo
     .split(" ")
     .map(v => parseInt(v, 10));
+
   const totalScore = books.reduce((accumulated, current) => {
     return accumulated + scoresOfBooks[current];
   }, 0);
@@ -39,20 +40,35 @@ for (let i = 0; i < inputData.length; i += 2) {
 }
 
 const sortedLibraries = scoredLibraries.sort((a, b) => {
-  if (b.librayScore === a.librayScore) {
-    return a.signupDays - b.signupDays;
-  } else {
-    return b.librayScore - a.librayScore;
-  }
+  return b.librayScore - a.librayScore;
 });
 
-let finalData = sortedLibraries.length + "\n";
+const alreadyScannedMap = {};
+
+let finalData = "";
+let finalDataArray = [];
+let finalLibraryLength = sortedLibraries.length;
 
 for (let j = 0; j < sortedLibraries.length; j++) {
   const { libID, numBooks, books } = sortedLibraries[j];
-  finalData = finalData + libID + " " + numBooks + "\n";
-  finalData = finalData + books.join(" ") + "\n";
+  const finalBooksArray = [];
+  for (const book of books) {
+    if (alreadyScannedMap[book] == null) {
+      finalBooksArray.push(book);
+      alreadyScannedMap[book] = true;
+    }
+  }
+
+  if (finalBooksArray.length === 0) {
+    finalLibraryLength -= 1;
+  } else {
+    finalDataArray.push(libID + " " + finalBooksArray.length);
+    finalDataArray.push(finalBooksArray.join(" "));
+  }
 }
+
+finalData = finalLibraryLength + "\n";
+finalData = finalData + finalDataArray.join("\n");
 
 const outputFilename = filename.split(".txt")[0] + "_output.txt";
 fs.writeFileSync(outputFilename, finalData);
