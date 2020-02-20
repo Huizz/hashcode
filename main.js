@@ -22,8 +22,31 @@ const calculateScore = library => {
     return accumulated + scoresOfBooks[current];
   }, 0);
 
+  // @TODO: assuming that scanning of books for each library are independent of each other
+  // what is the score I scan if I signup + scan until end of totalTime?
+  let sortBooksWithScore = books.map(book => {
+    return { bookID: book, score: scoresOfBooks[book] };
+  });
+  sortBooksWithScore = sortBooksWithScore.sort((a, b) => b.score - a.score);
+  let totalScoreTwo = 0;
+  const numDaysCanScan = totalTime - signupDays;
+
+  const upperLimit =
+    books.length < numDaysCanScan * numBooksScannedPerDay
+      ? books.length
+      : numDaysCanScan * numBooksScannedPerDay;
+  // so let's say I can scan up to 5 days, and I can scan 2 books a day, I can scan up till 10 books in 5 days
+  // I want to get the total score I can get if I scan for number of days up till upperLimit
+  for (let i = 0; i < upperLimit; i++) {
+    totalScoreTwo += sortBooksWithScore[i].score;
+  }
+
   const totalDaysToScan = books.length / numBooksScannedPerDay;
-  const librayScore = totalScore / (totalDaysToScan + signupDays);
+  // const librayScore = totalScore / (totalDaysToScan + signupDays);
+  const librayScore = totalScoreTwo / signupDays;
+  // how much score can I scan per day vs how long I need to scan everything
+  // totalScore/totalDaysToScan / (signupDays + totalDaysToScan)
+  // const librayScore = totalScore / totalDaysToScan / (signupDays / totalTime);
   library.librayScore = librayScore;
 
   return library;
